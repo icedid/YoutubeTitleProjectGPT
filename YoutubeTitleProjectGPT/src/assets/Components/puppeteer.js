@@ -34,21 +34,50 @@ class PuppeteerScraper {
       return;
     }
 
-    try {
-        // Extract video titles
+    const pageUrl = await this.page.url();
+
+    if(pageUrl.startsWith('https://www.youtube.com/results?search_query=')) {
+      try {
+        // Extract video titles and additional span text from the search results page
         const videoTitles = await this.page.evaluate(() => {
-          // Query all elements with the desired id
-          const elements = document.querySelectorAll('yt-formatted-string#video-title.style-scope.ytd-rich-grid-media');
-          // Map over the NodeList and extract the text content of each element
-          return Array.from(elements).map(el => el.textContent.trim());
+          // Query all video title elements on the search results page
+          const titleElements = document.querySelectorAll('ytd-video-renderer h3.title-and-badge yt-formatted-string');
+          // Query all the span elements with the desired class
+          const anchorElements = document.querySelectorAll('a.shortLockupViewModelHostEndpoint.shortLockupViewModelHostOutsideMetadataEndpoint');;
+
+  
+          // Map over the NodeList of video titles and span text
+          const titles = Array.from(titleElements).map(el => el.textContent.trim());
+          const titles1 = Array.from(anchorElements).map(el => el.getAttribute('title').trim());
+  
+          // Combine both arrays (video titles and additional span text)
+          return [...titles, ...titles1];
         });
-    
-        // console.log('Captured Video Titles:', videoTitles);
+  
+        // Log or return the extracted titles and span text
+        console.log('Captured Video Titles and Span Texts:', videoTitles);
         return videoTitles;
       } catch (error) {
-        console.error('Error scraping video titles:', error);
+        console.error('Error scraping video titles and span texts from search results:', error);
       }
-  }
+    }
+    else{
+      try {
+          // Extract video titles
+          const videoTitles = await this.page.evaluate(() => {
+            // Query all elements with the desired id
+            const elements = document.querySelectorAll('yt-formatted-string#video-title.style-scope.ytd-rich-grid-media');
+            // Map over the NodeList and extract the text content of each element
+            return Array.from(elements).map(el => el.textContent.trim());
+          });
+      
+          // console.log('Captured Video Titles:', videoTitles);
+          return videoTitles;
+        } catch (error) {
+          console.error('Error scraping video titles:', error);
+        }
+      }
+    }
 
   // Method to close the browser
   async closeBrowser() {

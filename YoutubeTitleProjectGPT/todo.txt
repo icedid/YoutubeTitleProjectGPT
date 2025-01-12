@@ -1,0 +1,1 @@
+- Make so puppeteer scraper can do both homepage and search page

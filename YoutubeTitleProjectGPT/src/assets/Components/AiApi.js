@@ -10,7 +10,7 @@ class TitleGenerator {
     this.model = this.genAI.getGenerativeModel({
       model: "gemini-2.0-flash-exp",
       systemInstruction:
-        "Above are titles from current videos that have been pushed by the algorithm. Please use the titles from above and create a title for my video that will also be pushed by the algorithm. Do it for my video on the following topic. When giving your answer please return in this format: {\"rationale\": \"...\", title:\"...\"}. Please generate 5 different titles.",
+        "Above are titles from current videos that have been pushed by the algorithm. Please use the titles from above and create a title for my video that will also be pushed by the algorithm. Do it for my video on the following topic. In the rationale, refer to what titles you took inspiration from. When giving your answer please return in this format: {\"rationale\": \"...\", title:\"...\"}. Please generate 5 different titles.",
     });
     this.generationConfig = {
       temperature: 1,
@@ -48,10 +48,10 @@ class TitleGenerator {
       // Parse the cleaned JSON string into a JavaScript object
       const data = JSON.parse(cleanedJSON);
   
-      // Extract titles into an array
-      const titles = data.map(item => item.title);
+      // Extract rationale and titles into a 3D array
+      const result = data.map(item => [item.rationale, item.title]);
   
-      return titles;
+      return result;
     } catch (error) {
       console.error("Failed to parse JSON or extract titles:", error);
       return [];
