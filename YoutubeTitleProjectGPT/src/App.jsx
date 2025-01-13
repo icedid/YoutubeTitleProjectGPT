@@ -6,6 +6,7 @@ import Lottie from "lottie-react";
 import animation from "./assets/poopanimation.json";
 import fartsound from "./assets/fartsound.mp3"; // Import the audio file
 
+
 function App() {
   const [prompt, setPrompt] = useState("");
   const [generatedTitle, setGeneratedTitle] = useState([]);
@@ -20,11 +21,6 @@ function App() {
     }
   };
 
-  const handlePause = () => {
-    if (audioRef.current) {
-      audioRef.current.pause(); // Pause the audio
-    }
-  };
 
 
   // Set the title visibility to true and hide it after 1 second
