@@ -1,8 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import PuppeteerScraper from './assets/Components/puppeteer.js';
-import TitleGenerator from './assets/Components/AiApi.js';
+import PuppeteerScraper from './Components/puppeteer.js';
+import AiApi from './Components/AiApi.js';
+
 
 // API Class
 class YoutubeTitleAPI {
@@ -10,7 +11,7 @@ class YoutubeTitleAPI {
     this.app = express();
     this.port = 3000;
     this.scraper = new PuppeteerScraper();
-    this.ai = new TitleGenerator("AIzaSyArl5Qrx8sskxDOTqdw2ZznDQHf3qOnQlU"); // Replace with your API key
+    this.ai = new AiApi("AIzaSyArl5Qrx8sskxDOTqdw2ZznDQHf3qOnQlU"); // Replace with your API key
 
     this.videoTitles = null
     this.generatedTitle = null
@@ -63,20 +64,29 @@ class YoutubeTitleAPI {
   // Set context function
   async setContext(req, res) {
     const { context } = req.body;
-
+  
     // Validate input
     if (!context || typeof context !== 'string') {
-      res.sendStatus(400)
+      // Send the response early and return to stop further execution
+      return res.sendStatus(400); // Bad Request
     }
+  
     try {
       // Set the context
       this.context = context;
-      res.sendStatus(200); // Send 200 OK status with no body
+  
+      // Send success response
+      res.sendStatus(200); // OK
     } catch (error) {
       console.error('Error setting context:', error);
-      res.status(500).json({ error: 'Failed to set context.' });
+  
+      // Ensure no response has been sent before sending an error
+      if (!res.headersSent) {
+        res.sendStatus(500); // Internal Server Error
+      }
     }
   }
+  
 
   // Generate a catchy title based on video titles and context
   async generateTitle(req, res) {
