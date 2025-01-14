@@ -4,7 +4,7 @@ import cors from 'cors';
 import PuppeteerScraper from './Components/puppeteer.js';
 import AiApi from './Components/AiApi.js';
 
-
+ 
 // API Class
 class YoutubeTitleAPI {
   constructor() {
