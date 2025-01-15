@@ -1,4 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
 
 class TitleGenerator {
   constructor(apiKey) {
@@ -71,7 +72,7 @@ class TitleGenerator {
 
 }
 
-export default TitleGenerator;
+module.exports = TitleGenerator;
 
 // // Example usage:
 // async function run() {

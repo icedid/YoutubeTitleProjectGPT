@@ -1,11 +1,10 @@
-import { useState, useEffect,useRef } from "react";
-import "./App.css";
-import axios from "axios";
-import debounce from "lodash/debounce";
-import Lottie from "lottie-react";
-import animation from "./assets/poopanimation.json";
-import fartsound from "./assets/fartsound.mp3"; // Import the audio file
-
+const React = require("react"); // Import React
+const { useState, useEffect, useRef } = require("react"); // Import hooks from React
+const axios = require("axios");
+const debounce = require("lodash/debounce");
+const Lottie = require("lottie-react");
+const animation = require("./assets/poopanimation.json");
+const fartsound = require("./assets/fartsound.mp3");
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -20,8 +19,6 @@ function App() {
       audioRef.current.play(); // Play the audio
     }
   };
-
-
 
   // Set the title visibility to true and hide it after 1 second
   useEffect(() => {
@@ -85,8 +82,6 @@ function App() {
     }
   };
 
-  
-
   return (
     <div className="app-container">
       <audio ref={audioRef} src={fartsound} preload="auto" />
@@ -100,7 +95,7 @@ function App() {
         <div>
           {/* Main UI */}
           <div className="ui-row">
-          <button onClick={handlePlay}>Free Candy</button>
+            <button onClick={handlePlay}>Free Candy</button>
             <button onClick={handleOpenBrowser}>Open Browser</button>
             <button onClick={handleScrapeBrowser}>Scrape Browser</button>
           </div>
@@ -141,4 +136,4 @@ function App() {
   );
 }
 
-export default App;
+module.exports = App; // Export the component

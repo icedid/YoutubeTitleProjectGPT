@@ -1,7 +1,8 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+const { StrictMode } = require('react');
+const { createRoot } = require('react-dom/client');
+require('./index.css');
+const App = require('./App.jsx').default;
+
 
 
 

@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+const puppeteer = require('puppeteer')
 
 // Puppeteer class to handle browser interactions
 class PuppeteerScraper {
@@ -99,4 +99,4 @@ class PuppeteerScraper {
 // }
 
 
-export default PuppeteerScraper;
+module.exports = PuppeteerScraper;

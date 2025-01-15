@@ -1,8 +1,8 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import PuppeteerScraper from './Components/puppeteer.js';
-import AiApi from './Components/AiApi.js';
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const PuppeteerScraper = require('./Components/puppeteer.js');
+const AiApi = require('./Components/AiApi.js');
 
  
 // API Class
