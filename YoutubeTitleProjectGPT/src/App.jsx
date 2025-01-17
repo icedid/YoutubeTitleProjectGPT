@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import axios from "axios";
 import debounce from "lodash/debounce";
@@ -6,12 +6,12 @@ import Lottie from "lottie-react";
 import animation from "./assets/poopanimation.json";
 import fartsound from "./assets/fartsound.mp3"; // Import the audio file
 
-
 function App() {
   const [prompt, setPrompt] = useState("");
   const [generatedTitle, setGeneratedTitle] = useState([]);
   const [message, setMessage] = useState("");
   const [showTitle, setShowTitle] = useState(false);
+  const [apiKey, setApiKey] = useState(""); // Initialize state for apiKey
 
   const audioRef = useRef(null); // Reference for controlling the audio
 
@@ -20,8 +20,6 @@ function App() {
       audioRef.current.play(); // Play the audio
     }
   };
-
-
 
   // Set the title visibility to true and hide it after 1 second
   useEffect(() => {
@@ -56,7 +54,9 @@ function App() {
 
   const debouncedSetContext = debounce(async (newPrompt) => {
     try {
-      await axios.post("http://localhost:3000/setcontext", { context: newPrompt });
+      await axios.post("http://localhost:3000/setcontext", {
+        context: newPrompt,
+      });
       console.log("Context set successfully");
     } catch (error) {
       console.error("Error setting context:", error);
@@ -73,7 +73,9 @@ function App() {
     try {
       const context = prompt;
       await axios.post("http://localhost:3000/setcontext", { context });
-      const response = await axios.post("http://localhost:3000/generatetitle");
+      const response = await axios.post("http://localhost:3000/generatetitle", {
+        key: apiKey, // Use the apiKey state
+      });
       const separatedData = response.data.generatedTitle.map((item) => ({
         rationale: item[0],
         title: item[1],
@@ -84,8 +86,6 @@ function App() {
       setGeneratedTitle([]);
     }
   };
-
-  
 
   return (
     <div className="app-container">
@@ -99,8 +99,17 @@ function App() {
       ) : (
         <div>
           {/* Main UI */}
-          <div className="ui-row">
-          <button onClick={handlePlay}>Free Candy</button>
+          <div className="api-key-container">
+            <label htmlFor="apiKey">API Key:</label>
+            <textarea
+              id="apiKey"
+              value={apiKey} // Bound to apiKey state
+              onChange={(e) => setApiKey(e.target.value)} // Updates apiKey state
+              rows="1"
+              cols="50"
+              placeholder="Enter your API key here"
+            />
+            <button onClick={handlePlay}>Free Candy</button>
             <button onClick={handleOpenBrowser}>Open Browser</button>
             <button onClick={handleScrapeBrowser}>Scrape Browser</button>
           </div>

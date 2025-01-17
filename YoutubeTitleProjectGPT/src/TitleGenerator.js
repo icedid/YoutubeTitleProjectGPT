@@ -11,7 +11,6 @@ class YoutubeTitleAPI {
     this.app = express();
     this.port = 3000;
     this.scraper = new PuppeteerScraper();
-    this.ai = new AiApi("AIzaSyArl5Qrx8sskxDOTqdw2ZznDQHf3qOnQlU"); // Replace with your API key
 
     this.videoTitles = null
     this.generatedTitle = null
@@ -92,6 +91,9 @@ class YoutubeTitleAPI {
   async generateTitle(req, res) {
     const videoTitles = this.videoTitles
     const context = this.context
+    const { key } = req.body;
+    console.log("currentKey " ,key)
+    let ai = new AiApi(key)
 
     if (!videoTitles || !Array.isArray(videoTitles)) {
       return res.status(400).json({ error: 'Video titles array is required.' });
@@ -102,7 +104,7 @@ class YoutubeTitleAPI {
     }
 
     try {
-      const generatedTitle = await this.ai.generateTitle(videoTitles, context);
+      const generatedTitle = await ai.generateTitle(videoTitles, context);
       res.json({ generatedTitle });
     } catch (error) {
       console.error('Error generating title:', error);

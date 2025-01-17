@@ -45,6 +45,16 @@
   margin: 0 auto;
 }
 
+.api-key-container input {
+  padding: 10px;
+  width: 80%;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  user-select: text; /* Ensure text can be selected */
+}
+
+
 @keyframes fadeIn {
   from {
     opacity: 0;
