@@ -1,11 +1,4 @@
 
-# Project Name
-
-## Description
-Brief description of your project.
-
-## Installation
-
 1. Install npm from [Node.js](https://nodejs.org/).
 2. Install dependencies:
 
