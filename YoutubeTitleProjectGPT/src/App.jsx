@@ -92,19 +92,19 @@ function App() {
       <audio ref={audioRef} src={fartsound} preload="auto" />
       {/* Intro animation */}
       {showTitle ? (
-        <div>
+        <div className="ui-row">
           <h1 className="fade-in">YouTube Title Generator</h1>
           <Lottie animationData={animation} className="poop-header" />
         </div>
       ) : (
-        <div>
+        <div className="ui-row">
           {/* Main UI */}
-          <div className="api-key-container">
+          <div className="api-key-container ui-row">
             <label htmlFor="apiKey">API Key:</label>
             <textarea
               id="apiKey"
-              value={apiKey} // Bound to apiKey state
-              onChange={(e) => setApiKey(e.target.value)} // Updates apiKey state
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
               rows="1"
               cols="50"
               placeholder="Enter your API key here"
@@ -113,7 +113,7 @@ function App() {
             <button onClick={handleOpenBrowser}>Open Browser</button>
             <button onClick={handleScrapeBrowser}>Scrape Browser</button>
           </div>
-
+  
           <div className="ui-row">
             <textarea
               placeholder="Enter Prompt"
@@ -124,11 +124,11 @@ function App() {
             />
             <button onClick={handleGenerateTitle}>Generate Title</button>
           </div>
-
-          <div>
+  
+          <div className="ui-row">
             {generatedTitle.length > 0 ? (
               generatedTitle.map((data, index) => (
-                <div key={index} style={{ marginBottom: "20px" }}>
+                <div key={index} className="ui-row">
                   <p>
                     <strong>Rationale:</strong> {data.rationale}
                   </p>
@@ -141,13 +141,13 @@ function App() {
               <p>No titles generated yet.</p>
             )}
           </div>
-
+  
           {/* Message display */}
-          {message && <p>{message}</p>}
+          {message && <div className="ui-row"><p>{message}</p></div>}
         </div>
       )}
     </div>
-  );
+  );  
 }
 
 export default App;
