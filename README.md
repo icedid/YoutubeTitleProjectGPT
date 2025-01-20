@@ -14,3 +14,4 @@ https://www.capcut.com/
    npm run dev
    ```
 
+API is a google gemini API key. model ver doesn't matter. prob will add different model compatibility eventually.
