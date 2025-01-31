@@ -5,6 +5,7 @@ import debounce from "lodash/debounce";
 import Lottie from "lottie-react";
 import animation from "./assets/poopanimation.json";
 import fartsound from "./assets/fartsound.mp3"; // Import the audio file
+import { CircularProgress } from '@mui/material'; // Import Material-UI CircularProgress for loading indicator
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -12,6 +13,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [showTitle, setShowTitle] = useState(false);
   const [apiKey, setApiKey] = useState(""); // Initialize state for apiKey
+  const [isScraping, setIsScraping] = useState(false); // State to track scraping status
 
   const audioRef = useRef(null); // Reference for controlling the audio
 
@@ -43,12 +45,15 @@ function App() {
   };
 
   const handleScrapeBrowser = async () => {
+    setIsScraping(true); // Set scraping state to true
     try {
       await axios.get("http://localhost:3000/scrape");
       setMessage("Scraping started.");
     } catch (error) {
       console.error("Error scraping browser:", error);
       setMessage("Failed to scrape browser.");
+    } finally {
+      setIsScraping(false); // Reset scraping state after operation
     }
   };
 
@@ -111,9 +116,14 @@ function App() {
             />
             <button onClick={handlePlay}>Free Candy</button>
             <button onClick={handleOpenBrowser}>Open Browser</button>
-            <button onClick={handleScrapeBrowser}>Scrape Browser</button>
+            <div className="scrape-button-container">
+              <button onClick={handleScrapeBrowser}>
+                Scrape Browser
+              </button>
+              {isScraping && <CircularProgress size={24} style={{ marginLeft: '10px' }} />}
+            </div>
           </div>
-  
+
           <div className="ui-row">
             <textarea
               placeholder="Enter Prompt"
@@ -124,7 +134,7 @@ function App() {
             />
             <button onClick={handleGenerateTitle}>Generate Title</button>
           </div>
-  
+
           <div className="ui-row">
             {generatedTitle.length > 0 ? (
               generatedTitle.map((data, index) => (
@@ -141,7 +151,7 @@ function App() {
               <p>No titles generated yet.</p>
             )}
           </div>
-  
+
           {/* Message display */}
           {message && <div className="ui-row"><p>{message}</p></div>}
         </div>
