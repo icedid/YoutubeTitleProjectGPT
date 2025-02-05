@@ -11,9 +11,23 @@ function App() {
   const [generatedTitle, setGeneratedTitle] = useState([]);
   const [message, setMessage] = useState("");
   const [showTitle, setShowTitle] = useState(false);
-  const [apiKey, setApiKey] = useState(""); // Initialize state for apiKey
+  const [apiKey, setApiKey] = useState(""); // API key state
+  const [isScraping, setIsScraping] = useState(false);
 
   const audioRef = useRef(null); // Reference for controlling the audio
+
+  // Function to update API key on server when leaving the textbox
+  const updateApiKey = (key) => {
+    axios
+      .post("http://localhost:3000/setapikey", { key })
+      .then(() => console.log("API key updated successfully"))
+      .catch((error) =>
+        console.error("Error updating API key on server:", error)
+      );
+  };
+
+  // Optionally, you can debounce the API call on blur if needed
+  // const debouncedUpdateApiKey = debounce(updateApiKey, 1000);
 
   const handlePlay = () => {
     if (audioRef.current) {
@@ -21,15 +35,13 @@ function App() {
     }
   };
 
-  // Set the title visibility to true and hide it after 1 second
+  // Show the intro title and hide it after 1 second
   useEffect(() => {
-    setShowTitle(true); // Show the intro title
-
+    setShowTitle(true);
     const timer = setTimeout(() => {
       setShowTitle(false);
-    }, 1000); // Hide the title after 1 second
-
-    return () => clearTimeout(timer); // Cleanup timer on unmount
+    }, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleOpenBrowser = async () => {
@@ -43,25 +55,29 @@ function App() {
   };
 
   const handleScrapeBrowser = async () => {
+    setIsScraping(true);
     try {
       await axios.get("http://localhost:3000/scrape");
       setMessage("Scraping started.");
     } catch (error) {
       console.error("Error scraping browser:", error);
       setMessage("Failed to scrape browser.");
+    } finally {
+      setTimeout(() => {
+        setIsScraping(false);
+      }, 500); // Delay before hiding the spinner
     }
   };
 
+  // Debounced function for updating context on prompt changes
   const debouncedSetContext = debounce(async (newPrompt) => {
     try {
-      await axios.post("http://localhost:3000/setcontext", {
-        context: newPrompt,
-      });
+      await axios.post("http://localhost:3000/setcontext", { context: newPrompt });
       console.log("Context set successfully");
     } catch (error) {
       console.error("Error setting context:", error);
     }
-  }, 500); // Debounce to avoid multiple API calls
+  }, 500);
 
   const handlePromptChange = (event) => {
     const newPrompt = event.target.value;
@@ -74,7 +90,7 @@ function App() {
       const context = prompt;
       await axios.post("http://localhost:3000/setcontext", { context });
       const response = await axios.post("http://localhost:3000/generatetitle", {
-        key: apiKey, // Use the apiKey state
+        key: apiKey,
       });
       const separatedData = response.data.generatedTitle.map((item) => ({
         rationale: item[0],
@@ -105,15 +121,25 @@ function App() {
               id="apiKey"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
+              onBlur={() => updateApiKey(apiKey)}
               rows="1"
               cols="50"
               placeholder="Enter your API key here"
             />
-            <button onClick={handlePlay}>Free Candy</button>
+            <button onClick={handlePlay}>uhhhh</button>
             <button onClick={handleOpenBrowser}>Open Browser</button>
-            <button onClick={handleScrapeBrowser}>Scrape Browser</button>
+            <button onClick={handleScrapeBrowser} disabled={isScraping}>
+              {isScraping ? (
+                <span>
+                  Scraping...
+                  <span className="loading-spinner"></span>
+                </span>
+              ) : (
+                "Scrape Browser"
+              )}
+            </button>
           </div>
-  
+
           <div className="ui-row">
             <textarea
               placeholder="Enter Prompt"
@@ -124,7 +150,7 @@ function App() {
             />
             <button onClick={handleGenerateTitle}>Generate Title</button>
           </div>
-  
+
           <div className="ui-row">
             {generatedTitle.length > 0 ? (
               generatedTitle.map((data, index) => (
@@ -141,13 +167,17 @@ function App() {
               <p>No titles generated yet.</p>
             )}
           </div>
-  
+
           {/* Message display */}
-          {message && <div className="ui-row"><p>{message}</p></div>}
+          {message && (
+            <div className="ui-row">
+              <p>{message}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
-  );  
+  );
 }
 
 export default App;

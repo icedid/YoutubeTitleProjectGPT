@@ -1,1 +1,3 @@
 - Make so puppeteer scraper can do both homepage and search page
+
+- Spinner shows up only for a few second.s also shows up within the click box. 

@@ -1,14 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-class TitleGenerator {
-  constructor(apiKey) {
+class GeminiAiApi {
+  constructor(apiKey,selModel = "gemini-2.0-flash-exp") {
     if (!apiKey) {
       throw new Error("API Key is required.");
     }
     this.apiKey = apiKey;
     this.genAI = new GoogleGenerativeAI(this.apiKey);
     this.model = this.genAI.getGenerativeModel({
-      model: "gemini-2.0-flash-exp",
+      model: selModel,
       systemInstruction:
         "Above are titles from current videos that have been pushed by the algorithm. Please use the titles from above and create a title for my video that will also be pushed by the algorithm. Do it for my video on the following topic. In the rationale, refer to what titles you took inspiration from. When giving your answer please return in this format: {\"rationale\": \"...\", title:\"...\"}. Please generate 5 different titles.",
     });
@@ -71,19 +71,19 @@ class TitleGenerator {
 
 }
 
-export default TitleGenerator;
+export default GeminiAiApi;
 
 // // Example usage:
 // async function run() {
 //   const apiKey = "AIzaSyArl5Qrx8sskxDOTqdw2ZznDQHf3qOnQlU";
-//   const titleGenerator = new TitleGenerator(apiKey);
+//   const GeminiAiApi = new GeminiAiApi(apiKey);
 
 //   const data = "This Was My Wake-Up Call - Doctor Mike"; // Replace with actual data
 //   const topic = "the video is about an underrated visual novel aliya timelink";
 
-//   const generatedTitle= await titleGenerator.generateTitle(data, topic);
+//   const generatedTitle= await GeminiAiApi.generateTitle(data, topic);
 //   console.log(generatedTitle)
-//   const title = titleGenerator.parseTitle(generatedTitle)
+//   const title = GeminiAiApi.parseTitle(generatedTitle)
 
 
 //   console.log(title);
