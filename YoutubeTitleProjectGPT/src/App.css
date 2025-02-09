@@ -1,3 +1,4 @@
+/* Global Container */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,18 +6,29 @@
   text-align: center;
 }
 
+/* Main app container centered in the viewport */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* Center horizontally */
+  justify-content: center;  /* Center vertically */
+  min-height: 100vh;        /* Fill the viewport height */
+  width: 100%;
+}
+
+/* UI Row Containers */
 .ui-row {
   display: flex;
   flex-direction: column; /* Stack items vertically */
   justify-content: center;
-  align-items: stretch;
-  margin-bottom: 2rem; /* Space between each row */
-  padding: 1rem; /* Uniform padding for each row */
-}
-
-.ui-row div {
-  margin-bottom: 1rem; /* Space between elements inside the row */
-  padding: 1rem; /* Padding for each element inside the row */
+  align-items: center;    /* Center items horizontally */
+  margin-bottom: 2rem;
+  padding: 1rem;
+  max-width: 800px; /* Example max width - adjust as needed */
+  width: 100%;      /* Make it responsive within max-width */
+  margin-left: auto; /* Center horizontally in parent */
+  margin-right: auto; /* Center horizontally in parent */
+  /* border: 1px solid red;  <- for debugging, uncomment to see row boundaries */
 }
 
 .api-key-container {
@@ -30,30 +42,21 @@
   margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  user-select: text; /* Ensure text can be selected */
 }
 
 .generated-title {
   background-color: #1a1a1a; /* Lighter gray background */
-  padding: 1rem; /* Uniform padding for the paragraph */
-  max-width: 500px; /* Set a max-width for the paragraph */
-  margin: 0 auto; /* Center align the text */
+  padding: 1rem;           /* Uniform padding for the paragraph */
+  max-width: 500px;        /* Set a max-width for the paragraph */
+  margin: 0 auto;          /* Center align the text */
 }
 
-.poop-header{
+.poop-header {
   width: 100%;
   height: 300px;
   margin: 0 auto;
 }
-
-.api-key-container input {
-  padding: 10px;
-  width: 80%;
-  margin-top: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  user-select: text; /* Ensure text can be selected */
-}
-
 
 @keyframes fadeIn {
   from {
@@ -83,7 +86,6 @@ textarea {
   resize: vertical; /* Allow vertical resizing */
 }
 
-
 /* Update the button styles section */
 .button {
   background-color: #4CAF50; /* Base green color */
@@ -92,21 +94,21 @@ textarea {
   position: relative;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   transform: translateZ(0); /* Enable hardware acceleration */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 10px; /* Adjust this value as needed */
 }
+
 
 .button:hover {
   background-color: #45a049;
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2),
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2),
               0 0 0 2px rgba(76, 175, 80, 0.3);
 }
 
 .button:active {
   transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Add floating effect animation */
@@ -120,6 +122,19 @@ textarea {
   animation: float 1.5s ease-in-out infinite;
 }
 
+.button-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Make buttons take full width */
+  width: 100%; /* Take full width of parent */
+}
+
+.input-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Make input and button take full width */
+  width: 100%; /* Take full width of parent */
+}
 
 .loading-spinner {
   display: inline-block;
@@ -128,17 +143,37 @@ textarea {
   border: 3px solid rgba(0, 0, 0, 0.3);
   border-radius: 50%;
   border-top-color: #fff; /* Changed to white for visibility on potentially dark backgrounds */
-  animation: spin 1s linear infinite; /* Added spin animation and changed timing function to linear for constant spin */
+  animation: spin 1s linear infinite; /* Constant spin animation */
   margin-left: 8px;
 }
 
-@keyframes spin { /* Added the spin animation definition */
+@keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-
 button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.result {
+  background-color: #1a1a1a; /* Solid light gray background */
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05) inset;
+  opacity: 0;
+  transform: translateY(20px);
+  animation-fill-mode: forwards;
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+}
+
+.no-results-text {
+  /* Copy text-related styles from .result here */
+  background-color: #1a1a1a; /* Same background as result for visual consistency */
+  border-radius: 12px; /* Same border-radius as result */
+  padding: 25px; /* Same padding as result */
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05) inset; /* Same box-shadow as result */
+  width: 100%; /* Added width: 100% to match button width */
+  box-sizing: border-box;
 }

@@ -16,9 +16,6 @@ class YoutubeTitleAPI {
     this.context = null;
     this.key = null; // Store the API key
 
-    this.modelRegistry = {
-      gemini: (key) => new GeminiAiApi(key), // GeminiAiApi requires an API key
-    };
     this.model = null;
 
     // Middleware
@@ -36,13 +33,13 @@ class YoutubeTitleAPI {
     this.app.post('/generatetitle', this.generateTitle.bind(this));
     this.app.post('/setcontext', this.setContext.bind(this));
     this.app.post('/setmodel', this.setModel.bind(this));
-    // New endpoint to set the API key
-    this.app.post('/setapikey', this.setApiKey.bind(this));
+    // (Optionally, remove separate API key endpoint if not needed)
+    // this.app.post('/setapikey', this.setApiKey.bind(this));
   }
 
   // Start browser and navigate to a predefined URL (no parameters required)
   async startBrowser(req, res) {
-    const url = "https://www.youtube.com";  // Predefined URL
+    const url = "https://www.youtube.com"; // Predefined URL
 
     try {
       await this.scraper.startBrowser(url);
@@ -65,60 +62,47 @@ class YoutubeTitleAPI {
     }
   }
 
-  // Set the model based on the key provided in the request
+  // Set the model based on the API key and model selection provided in the request
   async setModel(req, res) {
-    const { modelKey } = req.body;
+    const { key, modelKey } = req.body;
 
-    // Validate input
+    // Validate inputs
+    if (!key || typeof key !== 'string') {
+      return res.status(400).json({ error: 'Invalid API key provided.' });
+    }
     if (!modelKey || typeof modelKey !== 'string') {
-      return res.sendStatus(400); // Bad Request
+      return res.status(400).json({ error: 'Invalid model key provided.' });
     }
 
-    // Check if the model exists in the registry
-    if (!this.modelRegistry[modelKey]) {
-      return res.sendStatus(404); // Not Found
-    }
+    // Save the API key
+    this.key = key;
+    console.log(`Received API key: ${this.key} and model key: ${modelKey}`);
 
-    // Set the model using the stored API key (if needed)
-    this.model = this.modelRegistry[modelKey](this.key);
-    res.sendStatus(200); // OK
+    // Configure the model based on the model selection
+    if (modelKey === "G2Tk") {
+      this.model = new GeminiAiApi(this.key, "gemini-2.0-flash-thinking-exp-01-21");
+    }else if(modelKey == "g2F"){
+      this.model = new GeminiAiApi(this.key, "gemini-2.0-flash")
+    }
+    res.json({ message: `API key and model key received successfully` });
   }
 
   // Set context function
   async setContext(req, res) {
     const { context } = req.body;
-  
-    // Validate input
+
     if (!context || typeof context !== 'string') {
       return res.sendStatus(400); // Bad Request
     }
-  
+
     try {
-      // Set the context
       this.context = context;
       res.sendStatus(200); // OK
     } catch (error) {
       console.error('Error setting context:', error);
       if (!res.headersSent) {
-        res.sendStatus(500); // Internal Server Error
+        res.sendStatus(500);
       }
-    }
-  }
-
-  // New endpoint: set API key and store it in this.key
-  async setApiKey(req, res) {
-    const { key } = req.body;
-    if (!key || typeof key !== 'string') {
-      return res.sendStatus(400); // Bad Request if no key or invalid type
-    }
-
-    try {
-      this.key = key;
-      console.log(`API key updated to: ${this.key}`);
-      res.sendStatus(200);
-    } catch (error) {
-      console.error('Error setting API key:', error);
-      res.sendStatus(500);
     }
   }
 
@@ -127,21 +111,27 @@ class YoutubeTitleAPI {
     const videoTitles = this.videoTitles;
     const context = this.context;
     const { key } = req.body;
-    console.log("currentKey:", key);
+    console.log("Current key:", key); // Print the key received in the request body
+    console.log("Video Titles:", videoTitles); // Print the video titles being used for title generation
+    console.log("Context:", context); // Print the context
 
-    // Use the model that should be set via setModel
     let ai = this.model;
 
     if (!videoTitles || !Array.isArray(videoTitles)) {
+      console.log("Invalid video titles:", videoTitles); // Log if the videoTitles array is invalid
       return res.status(400).json({ error: 'Video titles array is required.' });
     }
 
     if (!context) {
+      console.log("Missing context:", context); // Log if the context is missing
       return res.status(400).json({ error: 'Context is required.' });
     }
 
     try {
+      console.log("Calling AI model to generate title...");
       const generatedTitle = await ai.generateTitle(videoTitles, context);
+      console.log("Generated title:", generatedTitle); // Log the generated title
+
       res.json({ generatedTitle });
     } catch (error) {
       console.error('Error generating title:', error);
