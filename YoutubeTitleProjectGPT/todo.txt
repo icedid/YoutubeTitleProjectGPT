@@ -1,3 +1,6 @@
 - Make so puppeteer scraper can do both homepage and search page
 
 - Spinner shows up only for a few second.s also shows up within the click box. 
+
+- Create a way to fine tune the results instead of manually having to do it
+    - Select titles you like, generate more titles based on that?
