@@ -6,6 +6,8 @@ import Lottie from "lottie-react";
 import animation from "./assets/poopanimation.json";
 import fartsound from "./assets/fartsound.mp3"; // Import the audio file
 
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";1x 
+
 /**
  * App component - Main component of the YouTube Title Generator application.
  * It handles user input, API calls, UI rendering, and modal management.
@@ -332,20 +334,13 @@ function App() {
   );
 
   return (
-    <div className="app-container">
-      <audio ref={audioRef} src={fartsound} preload="auto" />
-
-      {/* Conditionally render UI based on intro screen, modal, and main UI data */}
-      {showInitialIntro ? (
-        renderIntroScreen() // Show Intro Screen for the first 500ms
-      ) : showModal ? (
-        renderModalOverlay() // Show Modal if showModal is true
-      ) : mainUIData ? (
-        renderMainAppUI() // Show Main UI if mainUIData is available (modal closed)
-      ) : (
-        renderIntroScreen() // Fallback to intro screen if none of the above conditions are met (unlikely case after intro is hidden)
-      )}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<IntroPage />} />
+        <Route path="/settings" element={<ModalPage setMainUIData={setMainUIData} />} />
+        <Route path="/main" element={<MainPage mainUIData={mainUIData} />} />
+      </Routes>
+    </Router>
   );
 }
 
