@@ -10,7 +10,7 @@ class GeminiAiApi {
     this.model = this.genAI.getGenerativeModel({
       model: selModel,
       systemInstruction:
-        "Above are titles from current videos that have been pushed by the algorithm. Please use the titles from above and create a title for my video that will also be pushed by the algorithm. Do it for my video on the following topic. In the rationale, refer to what titles you took inspiration from. When giving your answer please return in this format: {\"rationale\": \"...\", title:\"...\"}. Please generate 5 different titles.",
+        "Above are titles from current videos that have been pushed by the algorithm. Please use the titles from above and create a title for my video that will also be pushed by the algorithm. Do it for my video on the following topic. In the rationale, refer to what titles you took inspiration from. When giving your answer please return in this format Do not return anything apart from the specified: {\"rationale\": \"...\", title:\"...\"}. Please generate 5 different titles.",
     });
     this.generationConfig = {
       temperature: 1,
@@ -29,10 +29,10 @@ class GeminiAiApi {
       });
 
       const message = `pastData:${JSON.stringify(context)}, topic:${JSON.stringify(title)}`;
-      const result = await chatSession.sendMessage(message);
+      const result = await chatSession.sendMessage(message); //
 
-      const res = this.extractTitles(result.response.text())
-
+      //const res = this.extractTitles(result.response.text())
+      const res = this.cleanJSON(result.response.text())
       return res
     } catch (error) {
       console.error("Error generating title:", error);
@@ -45,48 +45,66 @@ class GeminiAiApi {
       // Clean the JSON string (removing markdown-like formatting)
       const cleanedJSON = this.cleanJSON(jsonString);
   
-      // Parse the cleaned JSON string into a JavaScript object
-      const data = JSON.parse(cleanedJSON);
+      // Attempt to parse the cleaned JSON string, only if it's a string
+      const data = typeof cleanedJSON === 'string' ? JSON.parse(cleanedJSON) : cleanedJSON;
   
-      // Extract rationale and titles into a 3D array
-      const result = data.map(item => [item.rationale, item.title]);
-  
-      return result;
+      // Check if the parsed data is an array. If not, check if it's an object with 'rationale' and 'titles'.
+      if (Array.isArray(data)) {
+        return data.map(item => [item.rationale, item.title]);
+      } else if (
+        data &&
+        typeof data === 'object' &&
+        data.results &&
+        Array.isArray(data.results)
+      ) {
+        // If it's an object with the expected structure, map over the titles.
+        return data.results.map(item => [item.rationale, item.title]);
+      } else {
+        console.warn("Parsed data is not in the expected format:", data);
+        return { rawResponse: cleanedJSON }; // Return raw JSON for debugging
+      }
     } catch (error) {
       console.error("Failed to parse JSON or extract titles:", error);
-      return [];
+      return { rawResponse: jsonString }; // Return the original JSON string if an error occurs
     }
   }
+  
+  
+  
   
   // Utility function to clean JSON string
   cleanJSON(responseText) {
     try {
-      // Remove backticks and markdown formatting
+      // Check if the responseText is an object, and if so, convert it to string
+      if (typeof responseText === 'object') {
+        return JSON.stringify(responseText);
+      }
+  
+      // If it's already a string, clean it (remove backticks and markdown formatting)
       return responseText.replace(/```json|```/g, "").trim();
     } catch (error) {
       console.error("Error cleaning JSON:", error);
       return responseText; // Return the raw response if cleaning fails
     }
   }
+  
 
 }
 
 export default GeminiAiApi;
 
-// // Example usage:
+
+
 // async function run() {
-//   const apiKey = "AIzaSyArl5Qrx8sskxDOTqdw2ZznDQHf3qOnQlU";
-//   const GeminiAiApi = new GeminiAiApi(apiKey);
+//   const apiKey = "AIzaSyDQTqjAdNdQLxDwL-JQuY4CkNV0DuyG4ew";
+//   const api = new GeminiAiApi(apiKey, "gemini-2.0-flash-exp");
 
 //   const data = "This Was My Wake-Up Call - Doctor Mike"; // Replace with actual data
 //   const topic = "the video is about an underrated visual novel aliya timelink";
 
-//   const generatedTitle= await GeminiAiApi.generateTitle(data, topic);
+//   const generatedTitle= await api.generateTitle(data, topic);
 //   console.log(generatedTitle)
-//   const title = GeminiAiApi.parseTitle(generatedTitle)
 
-
-//   console.log(title);
 // }
 
 // run()
